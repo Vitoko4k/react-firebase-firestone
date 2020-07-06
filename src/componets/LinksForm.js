@@ -1,12 +1,14 @@
 import React, {useState} from 'react'
 
-export const LinksForm = () => {
+export const LinksForm = (props) => {
 
-    const [values, setValues] = useState({
+    const initialStateVal = {
         url:'',
         name:'',
         description:''
-    });
+    };
+
+    const [values, setValues] = useState(initialStateVal);
 
     const handleInputChange = e => {
         const {name,value} = e.target;
@@ -15,7 +17,8 @@ export const LinksForm = () => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        console.log(values);
+        props.addOrEditLink(values);
+        setValues({...initialStateVal})
     };
 
     return (
@@ -30,6 +33,7 @@ export const LinksForm = () => {
                 placeholder='https://algunurl.com'
                 name='url'
                 onChange={handleInputChange}
+                value={values.url}
                 />
             </div>
             <div className='form-group input-group'>
@@ -42,12 +46,14 @@ export const LinksForm = () => {
                 name='name'
                 placeholder='Nombre del sitio web'
                 onChange={handleInputChange}
+                value={values.name}
                 />
             </div>
             <div className='form-group'>
                 <textarea name='description' rpws='3' className='form-control'
                 placeholder='Escribe una descripcion'
-                onChange={handleInputChange}></textarea>
+                onChange={handleInputChange}
+                value={values.description}></textarea>
             </div>
             <button className='btn btn-primary btn-block'>Guardar</button>
         </form>
