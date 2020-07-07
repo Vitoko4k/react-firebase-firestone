@@ -10,17 +10,21 @@ export const Links = () => {
     const [currentId, setCurrenId] = useState('');
 
     const addOrEditLinks = async (linkObject) => {
-       if (currentId === ''){
-            await db.collection('links').doc().set(linkObject);
-            toast('Nuevo link agregado',{
-            type:'success',
-        });
-       }  else {
-           await db.collection('links').doc(currentId).update(linkObject);
-           toast('Link actualizado correctamente',{
+       try {
+            if (currentId === ''){
+                await db.collection('links').doc().set(linkObject);
+                toast('Nuevo link agregado',{
+                type:'success',
+                });
+            }  else {
+                await db.collection('links').doc(currentId).update(linkObject);
+                toast('Link actualizado correctamente',{
                 type:'info',
-            });
-        setCurrenId('');
+                });
+                setCurrenId('');
+            }
+       } catch (error){
+           console.error(error);
        }
     };
 
