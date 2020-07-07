@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import { db } from '../firebase';
 
 export const LinksForm = (props) => {
 
@@ -15,11 +16,24 @@ export const LinksForm = (props) => {
         setValues({...values, [name]:value})
     };
 
-    const handleSubmit = e => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        props.addOrEditLink(values);
-        setValues({...initialStateVal})
+        props.addOrEditLinks(values);
+        setValues({...initialStateVal});
     };
+
+    const getLinkById = async (id) => {
+        const doc = await db.collection('links').doc(id).get();
+        setValues({...doc.data()})
+    };
+
+    useEffect(() => {
+        if (props.currentId === ''){
+            setValues({...initialStateVal});
+        } else {
+            getLinkById(props.currentId);
+        }
+    }, [props.currentId]);
 
     return (
         <form className='card card-body' onSubmit={handleSubmit}> 
@@ -55,7 +69,9 @@ export const LinksForm = (props) => {
                 onChange={handleInputChange}
                 value={values.description}></textarea>
             </div>
-            <button className='btn btn-primary btn-block'>Guardar</button>
+            <button className='btn btn-primary btn-block'>
+                {props.currentId === '' ? 'Guardado' : 'Actualizado'}
+            </button>
         </form>
     )
 };

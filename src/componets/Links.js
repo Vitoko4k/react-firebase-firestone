@@ -7,12 +7,21 @@ import {db} from '../firebase'
 export const Links = () => {
 
     const [links, setLinks] = useState([]);
+    const [currentId, setCurrenId] = useState('');
 
     const addOrEditLinks = async (linkObject) => {
-        await db.collection('links').doc().set(linkObject);
-        toast('Nuevo link agregado',{
-            type:'success'
-        })
+       if (currentId === ''){
+            await db.collection('links').doc().set(linkObject);
+            toast('Nuevo link agregado',{
+            type:'success',
+        });
+       }  else {
+           await db.collection('links').doc(currentId).update(linkObject);
+           toast('Link actualizado correctamente',{
+                type:'info',
+            });
+        setCurrenId('');
+       }
     };
 
     const onDeleteLink = async id => {
@@ -42,7 +51,7 @@ export const Links = () => {
     return (
         <div>
             <div className='col-md-4 p-2'>
-                <LinksForm addOrEditLink={addOrEditLinks} />
+                <LinksForm {...{addOrEditLinks, currentId, links}} />
             </div>
             <div className='col-md-8 p-2'>
                 {links.map((link) => (
@@ -50,10 +59,16 @@ export const Links = () => {
                     <div className='card-body'>
                         <div className='d-flex justify-content-between'>
                             <h4>{link.name}</h4>
-                            <i 
-                            className='material-icons text-danger' 
-                            onClick={() => onDeleteLink(link.id)}
-                            >close</i>
+                            <div>
+                                <i 
+                                className='material-icons text-danger' 
+                                onClick={() => onDeleteLink(link.id)}
+                                >close</i>
+                                <i 
+                                className='material-icons' 
+                                onClick={() => setCurrenId(link.id)}
+                                >create</i>
+                            </div>
                         </div>
                         <p>{link.description}</p>
                         <a href={link.url} target='blank' rel='noopener noreferrer'>
